@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro e Sugestões de Livros - CIEP 183 João Vitta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4169E1 0%, #000000 100%);
+            color: #FFFFFF;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #FFA500;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 2.5em;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #FFA500;
+        }
+
+        /* Abas */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .tab-button {
+            background: #000000;
+            color: #FFA500;
+            border: 2px solid #FFA500;
+            padding: 12px 24px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            transition: background 0.3s ease;
+        }
+        .tab-button.active {
+            background: #FFA500;
+            color: #000000;
+            font-weight: bold;
+        }
+        .tab-button:hover:not(.active) {
+            background: #333;
+        }
+
+        /* Conteúdo das abas */
+        .tab-content {
+            display: none;
+            width: 90%;
+            max-width: 900px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Container geral */
+        .container {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid #FFA500;
+        }
+
+        /* Formulários */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #FFA500;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #FFA500;
+            border-radius: 6px;
+            background-color: #FFFFFF;
+            color: #000000;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+        }
+
+        button {
+            background: linear-gradient(45deg, #FFA500, #FF8C00);
+            color: #000000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            font-weight: bold;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #FF8C00, #FFA500);
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Campo de busca */
+        #searchCadastro, #searchSugestao {
+            margin-bottom: 20px;
+            padding: 12px;
+            border: 2px solid #FFA500;
+            border-radius: 6px;
+            background-color: #FFFFFF;
+            color: #000000;
+            font-size: 16px;
+            width: 100%;
+        }
+        #searchCadastro:focus, #searchSugestao:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 8px rgba(255, 165, 0, 0.5);
+        }
+
+        /* Lista de itens */
+        .item-list {
+            margin-top: 20px;
+        }
+        .item {
+            background: linear-gradient(45deg, #4169E1, #000000);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+        .item:hover {
+            transform: scale(1.02);
+        }
+        .item-info {
+            flex: 1;
+            color: #FFFFFF;
+        }
+        .item-info strong {
+            color: #FFA500;
+        }
+        .item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .item-actions button {
+            margin: 0;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #FFFFFF;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+            .item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .item-actions {
+                align-self: stretch;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Sistema de Livros - CIEP 183 João Vitta</h1>
+    <div class="header">
+        <p>Gerencie o acervo e receba sugestões de novas publicações.</p>
+    </div>
+
+    <!-- ABAS -->
+    <div class="tabs">
+        <button class="tab-button active" data-tab="cadastro">Cadastro de Livros</button>
+        <button class="tab-button" data-tab="sugestoes">Sugestões de Publicações</button>
+    </div>
+
+    <!-- CONTEÚDO DAS ABAS -->
+    <div id="cadastro" class="tab-content active">
+        <div class="container">
+            <h2>Adicionar ou Editar Livro</h2>
+            <form id="bookForm">
+                <div class="form-group">
+                    <label for="nome">Nome da Publicação:</label>
+                    <input type="text" id="nome" placeholder="Digite o nome do livro..." required>
+                </div>
+                <div class="form-group">
+                    <label for="autor">Autor:</label>
+                    <input type="text" id="autor" placeholder="Digite o nome do autor..." required>
+                </div>
+                <div class="form-group">
+                    <label for="editora">Editora:</label>
+                    <input type="text" id="editora" placeholder="Digite a editora..." required>
+                </div>
+                <div class="form-group">
+                    <label for="quantidade">Quantidade:</label>
+                    <input type="number" id="quantidade" placeholder="Digite a quantidade..." required min="1">
+                </div>
+                <div class="form-group">
+                    <label for="estilo">Estilo Literário:</label>
+                    <select id="estilo" required>
+                        <option value="" disabled selected>Selecione o estilo literário</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Ficção Científica">Ficção Científica</option>
+                        <option value="Fantasia">Fantasia</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Poesia">Poesia</option>
+                        <option value="Biografia">Biografia</option>
+                        <option value="Histórico">Histórico</option>
+                        <option value="Suspense">Suspense</option>
+                        <option value="Terror">Terror</option>
+                        <option value="Infantil">Infantil</option>
+                        <option value="Aventura">Aventura</option>
+                        <option value="Didático">Didático</option>
+                        <option value="Mistério">Mistério</option>
+                        <option value="Comédia">Comédia</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit"><i class="fas fa-save"></i> Salvar Livro</button>
+                    <button type="button" id="cancelEdit" style="display: none;"><i class="fas fa-times"></i> Cancelar Edição</button>
+                </div>
+            </form>
+
+            <h3>Pesquisar Livros</h3>
+            <input type="text" id="searchCadastro" placeholder="Pesquise por nome, autor, editora, quantidade ou estilo...">
+
+            <div id="bookList" class="item-list">
+                <p class="empty-message">Nenhum livro cadastrado ainda.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABA DE SUGESTÕES -->
+    <div id="sugestoes" class="tab-content">
+        <div class="container">
+            <h2>Sugerir Nova Publicação</h2>
+            <form id="suggestionForm">
+                <div class="form-group">
+                    <label for="sug-nome">Nome da Publicação:</label>
+                    <input type="text" id="sug-nome" placeholder="Digite o nome do livro sugerido..." required>
+                </div>
+                <div class="form-group">
+                    <label for="sug-autor">Autor:</label>
+                    <input type="text" id="sug-autor" placeholder="Digite o nome do autor..." required>
+                </div>
+                <div class="form-group">
+                    <label for="sug-editora">Editora:</label>
+                    <input type="text" id="sug-editora" placeholder="Digite a editora..." required>
+                </div>
+                <div class="form-group">
+                    <label for="sug-estilo">Estilo Literário:</label>
+                    <select id="sug-estilo" required>
+                        <option value="" disabled selected>Selecione o estilo literário</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Ficção Científica">Ficção Científica</option>
+                        <option value="Fantasia">Fantasia</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Poesia">Poesia</option>
+                        <option value="Biografia">Biografia</option>
+                        <option value="Histórico">Histórico</option>
+                        <option value="Suspense">Suspense</option>
+                        <option value="Terror">Terror</option>
+                        <option value="Infantil">Infantil</option>
+                        <option value="Aventura">Aventura</option>
+                        <option value="Didático">Didático</option>
+                        <option value="Mistério">Mistério</option>
+                        <option value="Comédia">Comédia</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sug-motivo">Motivo da Sugestão:</label>
+                    <textarea id="sug-motivo" rows="4" placeholder="Por que você recomenda este livro?" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit"><i class="fas fa-paper-plane"></i> Enviar Sugestão</button>
+                    <button type="button" id="cancelSuggestionEdit" style="display: none;"><i class="fas fa-times"></i> Cancelar Edição</button>
+                </div>
+            </form>
+
+            <h3>Pesquisar Sugestões</h3>
+            <input type="text" id="searchSugestao" placeholder="Pesquise por nome, autor, editora ou estilo...">
+
+            <div id="suggestionList" class="item-list">
+                <p class="empty-message">Nenhuma sugestão cadastrada ainda.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === Cadastro de Livros ===
+        let livros = JSON.parse(localStorage.getItem('livros')) || [];
+        let editIndex = null;
+
+        document.getElementById('bookForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const book = {
+                id: editIndex !== null ? livros[editIndex].id : Date.now(),
+                nome: document.getElementById('nome').value.trim(),
+                autor: document.getElementById('autor').value.trim(),
+                editora: document.getElementById('editora').value.trim(),
+                quantidade: parseInt(document.getElementById('quantidade').value),
+                estilo: document.getElementById('estilo').value
+            };
+
+            if (editIndex !== null) {
+                livros[editIndex] = book;
+                editIndex = null;
+            } else {
+                livros.push(book);
+            }
+
+            localStorage.setItem('livros', JSON.stringify(livros));
+            document.getElementById('bookForm').reset();
+            document.getElementById('cancelEdit').style.display = 'none';
+            renderBooks();
+        });
+
+        document.getElementById('cancelEdit').addEventListener('click', function() {
+            editIndex = null;
+            document.getElementById('bookForm').reset();
+            this.style.display = 'none';
+        });
+
+        document.getElementById('searchCadastro').addEventListener('input', renderBooks);
+
+        function renderBooks() {
+            const searchTerm = document.getElementById('searchCadastro').value.trim().toLowerCase();
+            const filteredBooks = livros.filter(book =>
+                book.nome.toLowerCase().includes(searchTerm) ||
+                book.autor.toLowerCase().includes(searchTerm) ||
+                book.editora.toLowerCase().includes(searchTerm) ||
+                book.quantidade.toString().includes(searchTerm) ||
+                book.estilo.toLowerCase().includes(searchTerm)
+            );
+
+            const bookList = document.getElementById('bookList');
+            bookList.innerHTML = '';
+
+            if (filteredBooks.length === 0) {
+                bookList.innerHTML = '<p class="empty-message">Nenhum livro encontrado.</p>';
+                return;
+            }
+
+            filteredBooks.forEach((book, index) => {
+                const originalIndex = livros.findIndex(b => b.id === book.id);
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerHTML = `
+                    <div class="item-info">
+                        <strong>Nome:</strong> ${book.nome}<br>
+                        <strong>Autor:</strong> ${book.autor}<br>
+                        <strong>Editora:</strong> ${book.editora}<br>
+                        <strong>Quantidade:</strong> ${book.quantidade}<br>
+                        <strong>Estilo:</strong> ${book.estilo}
+                    </div>
+                    <div class="item-actions">
+                        <button class="edit" data-index="${originalIndex}"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="delete" data-index="${originalIndex}"><i class="fas fa-trash"></i> Excluir</button>
+                    </div>
+                `;
+                bookList.appendChild(item);
+            });
+
+            // Ações
+            bookList.querySelectorAll('.edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const book = livros[btn.dataset.index];
+                    document.getElementById('nome').value = book.nome;
+                    document.getElementById('autor').value = book.autor;
+                    document.getElementById('editora').value = book.editora;
+                    document.getElementById('quantidade').value = book.quantidade;
+                    document.getElementById('estilo').value = book.estilo;
+                    editIndex = btn.dataset.index;
+                    document.getElementById('cancelEdit').style.display = 'inline-block';
+                });
+            });
+
+            bookList.querySelectorAll('.delete').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (confirm('Tem certeza que deseja excluir este livro?')) {
+                        livros.splice(btn.dataset.index, 1);
+                        localStorage.setItem('livros', JSON.stringify(livros));
+                        renderBooks();
+                    }
+                });
+            });
+        }
+
+        // === Sugestões de Livros ===
+        let sugestoes = JSON.parse(localStorage.getItem('sugestoes')) || [];
+        let editSugIndex = null;
+
+        document.getElementById('suggestionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const sug = {
+                id: editSugIndex !== null ? sugestoes[editSugIndex].id : Date.now(),
+                nome: document.getElementById('sug-nome').value.trim(),
+                autor: document.getElementById('sug-autor').value.trim(),
+                editora: document.getElementById('sug-editora').value.trim(),
+                estilo: document.getElementById('sug-estilo').value,
+                motivo: document.getElementById('sug-motivo').value.trim()
+            };
+
+            if (editSugIndex !== null) {
+                sugestoes[editSugIndex] = sug;
+                editSugIndex = null;
+            } else {
+                sugestoes.push(sug);
+            }
+
+            localStorage.setItem('sugestoes', JSON.stringify(sugestoes));
+            document.getElementById('suggestionForm').reset();
+            document.getElementById('cancelSuggestionEdit').style.display = 'none';
+            renderSuggestions();
+        });
+
+        document.getElementById('cancelSuggestionEdit').addEventListener('click', function() {
+            editSugIndex = null;
+            document.getElementById('suggestionForm').reset();
+            this.style.display = 'none';
+        });
+
+        document.getElementById('searchSugestao').addEventListener('input', renderSuggestions);
+
+        function renderSuggestions() {
+            const searchTerm = document.getElementById('searchSugestao').value.trim().toLowerCase();
+            const filtered = sugestoes.filter(s =>
+                s.nome.toLowerCase().includes(searchTerm) ||
+                s.autor.toLowerCase().includes(searchTerm) ||
+                s.editora.toLowerCase().includes(searchTerm) ||
+                s.estilo.toLowerCase().includes(searchTerm)
+            );
+
+            const list = document.getElementById('suggestionList');
+            list.innerHTML = '';
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<p class="empty-message">Nenhuma sugestão encontrada.</p>';
+                return;
+            }
+
+            filtered.forEach((s, index) => {
+                const originalIndex = sugestoes.findIndex(sug => sug.id === s.id);
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerHTML = `
+                    <div class="item-info">
+                        <strong>Nome:</strong> ${s.nome}<br>
+                        <strong>Autor:</strong> ${s.autor}<br>
+                        <strong>Editora:</strong> ${s.editora}<br>
+                        <strong>Estilo:</strong> ${s.estilo}<br>
+                        <strong>Motivo:</strong> ${s.motivo}
+                    </div>
+                    <div class="item-actions">
+                        <button class="edit" data-index="${originalIndex}"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="delete" data-index="${originalIndex}"><i class="fas fa-trash"></i> Excluir</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+
+            list.querySelectorAll('.edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const s = sugestoes[btn.dataset.index];
+                    document.getElementById('sug-nome').value = s.nome;
+                    document.getElementById('sug-autor').value = s.autor;
+                    document.getElementById('sug-editora').value = s.editora;
+                    document.getElementById('sug-estilo').value = s.estilo;
+                    document.getElementById('sug-motivo').value = s.motivo;
+                    editSugIndex = btn.dataset.index;
+                    document.getElementById('cancelSuggestionEdit').style.display = 'inline-block';
+                });
+            });
+
+            list.querySelectorAll('.delete').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (confirm('Excluir esta sugestão?')) {
+                        sugestoes.splice(btn.dataset.index, 1);
+                        localStorage.setItem('sugestoes', JSON.stringify(sugestoes));
+                        renderSuggestions();
+                    }
+                });
+            });
+        }
+
+        // === Troca de Abas ===
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Carregar dados ao iniciar
+        renderBooks();
+        renderSuggestions();
+    </script>
+</body>
+</html>
